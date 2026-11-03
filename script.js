@@ -26,6 +26,58 @@ const languagesEl = document.getElementById("languagesValue");
 
 // CODE ALONG WITH INSTRUCTOR STARTS HERE
 
+/* Step 1 */
+searchBtn.addEventListener('click', fetchCountry);
+
+/* Step 2 */
+async function fetchCountry() {
+  const countryName = countryInput.value.trim();
+  
+  if (!countryName) return; // nothing was typed
+  
+/* Step 3 */
+  showLoading();
+
+/* Step 4 */
+  try {
+    const API_KEY = "rc_live_54ba2fe34baa4260a70fd218c5c802bb";
+    
+    const url =
+      `https://api.restcountries.com/countries/v5?q=${encodeURIComponent(countryName)}` + `&response_fields=names.common,capitals,region,population,languages,flag.url_png,flag.description`;
+    
+    const response = await fetch(url, {
+      headers: {Authorization: `Bearer ${API_KEY}`}
+    });
+    
+    if (!response.ok) {
+      throw new Error('Country not found');
+    }
+    
+    /* Step 5 */
+    const data = await response.json();
+    const objects = data.data.objects;
+    
+    if (!objects || objects.length === 0) {
+      throw new Error('Country not found');
+    }
+    
+    const country = objects[0];
+    
+    /* Step 6 */
+    countryNameEl.textContent = country.names.common;
+    hideLoading();
+    resultCard.classList.remove('hidden');
+    errorEl.classList.add('hidden');
+    
+  } catch (error) {
+    hideLoading();
+    resultCard.classList.add('hidden');
+    errorEl.classList.remove('hidden');
+    errorEl.textContent = error.message;
+  }
+
+}
+
 /* ============================================================
        TEAM BUILD STARTS HERE
        The instructor demo stops at Step 6. Steps 7-10 are your
